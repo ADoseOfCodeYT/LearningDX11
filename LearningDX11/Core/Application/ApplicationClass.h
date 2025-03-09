@@ -7,6 +7,8 @@
 #include "Scene/ModelClass.h"
 #include "Scene/LightClass.h"
 #include "Shaders/LightShaderClass.h"
+#include "Shaders/TextureShaderClass.h"
+#include "2D/BitmapClass.h"
 
 class ApplicationClass
 {
@@ -26,14 +28,16 @@ private:
     CameraClass* m_Camera;
     ModelClass* m_Model;
     LightShaderClass* m_LightShader;
+    TextureShaderClass* m_TextureShader;
+    BitmapClass* m_Bitmap;
     LightClass* m_Lights;
     int m_numLights;
 };
 
-const bool FULL_SCREEN = false;
-const bool VSYNC_ENABLED = true;
-const float SCREEN_DEPTH = 1000.0f;
-const float SCREEN_NEAR = 0.3f;
+constexpr bool FULL_SCREEN = true;
+constexpr bool VSYNC_ENABLED = true;
+constexpr float SCREEN_DEPTH = 1000.0f;
+constexpr float SCREEN_NEAR = 0.3f;
 const LPCWSTR APPLICATION_NAME = L"Learning DX11";
 
 #endif

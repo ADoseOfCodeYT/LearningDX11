@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\2D\BitmapClass.cpp" />
     <ClCompile Include="Core\Application\ApplicationClass.cpp" />
     <ClCompile Include="Core\Application\SystemClass.cpp" />
     <ClCompile Include="Core\Input\InputClass.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="Shaders\TextureShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\2D\BitmapClass.h" />
     <ClInclude Include="Core\Application\ApplicationClass.h" />
     <ClInclude Include="Core\Application\SystemClass.h" />
     <ClInclude Include="Core\Input\InputClass.h" />

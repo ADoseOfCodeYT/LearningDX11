@@ -8,7 +8,8 @@
 #include "Scene/LightClass.h"
 #include "Shaders/LightShaderClass.h"
 #include "Shaders/TextureShaderClass.h"
-#include "2D/BitmapClass.h"
+#include "2D/SpriteClass.h"
+#include "Helpers/TImerClass.h"
 
 class ApplicationClass
 {
@@ -29,12 +30,13 @@ private:
     ModelClass* m_Model;
     LightShaderClass* m_LightShader;
     TextureShaderClass* m_TextureShader;
-    BitmapClass* m_Bitmap;
     LightClass* m_Lights;
     int m_numLights;
+    SpriteClass* m_Sprite;
+    TimerClass* m_Timer;
 };
 
-constexpr bool FULL_SCREEN = true;
+constexpr bool FULL_SCREEN = false;
 constexpr bool VSYNC_ENABLED = true;
 constexpr float SCREEN_DEPTH = 1000.0f;
 constexpr float SCREEN_NEAR = 0.3f;

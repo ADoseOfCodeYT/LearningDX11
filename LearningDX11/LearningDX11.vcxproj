@@ -137,9 +137,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Core\2D\BitmapClass.cpp" />
+    <ClCompile Include="Core\2D\SpriteClass.cpp" />
     <ClCompile Include="Core\Application\ApplicationClass.cpp" />
     <ClCompile Include="Core\Application\SystemClass.cpp" />
+    <ClCompile Include="Core\Helpers\TImerClass.cpp" />
     <ClCompile Include="Core\Input\InputClass.cpp" />
     <ClCompile Include="Core\main.cpp" />
     <ClCompile Include="Core\Renderer\D3DClass.cpp" />
@@ -152,9 +153,10 @@
     <ClCompile Include="Shaders\TextureShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core\2D\BitmapClass.h" />
+    <ClInclude Include="Core\2D\SpriteClass.h" />
     <ClInclude Include="Core\Application\ApplicationClass.h" />
     <ClInclude Include="Core\Application\SystemClass.h" />
+    <ClInclude Include="Core\Helpers\TImerClass.h" />
     <ClInclude Include="Core\Input\InputClass.h" />
     <ClInclude Include="Core\Renderer\D3DClass.h" />
     <ClInclude Include="Core\Scene\CameraClass.h" />

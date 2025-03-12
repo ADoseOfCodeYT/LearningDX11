@@ -10,6 +10,10 @@
 #include "Shaders/TextureShaderClass.h"
 #include "2D/SpriteClass.h"
 #include "Helpers/TImerClass.h"
+#include "2D/FontClass.h"
+#include "2D/TextClass.h"
+#include "Shaders/FontShaderClass.h"
+
 
 class ApplicationClass
 {
@@ -34,6 +38,9 @@ private:
     int m_numLights;
     SpriteClass* m_Sprite;
     TimerClass* m_Timer;
+    FontShaderClass* m_FontShader;
+    FontClass* m_Font;
+    TextClass *m_TextString1, *m_TextString2, * m_TextString3;
 };
 
 constexpr bool FULL_SCREEN = false;

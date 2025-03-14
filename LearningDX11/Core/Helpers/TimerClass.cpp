@@ -1,4 +1,4 @@
-﻿#include "TImerClass.h"
+﻿#include "TimerClass.h"
 
 TimerClass::TimerClass()
 {

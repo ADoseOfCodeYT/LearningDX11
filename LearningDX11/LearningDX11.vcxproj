@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\2D\FontClass.cpp" />
+    <ClCompile Include="Core\2D\FPSClass.cpp" />
     <ClCompile Include="Core\2D\SpriteClass.cpp" />
     <ClCompile Include="Core\2D\TextClass.cpp" />
     <ClCompile Include="Core\Application\ApplicationClass.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\2D\FontClass.h" />
+    <ClInclude Include="Core\2D\FPSClass.h" />
     <ClInclude Include="Core\2D\SpriteClass.h" />
     <ClInclude Include="Core\2D\TextClass.h" />
     <ClInclude Include="Core\Application\ApplicationClass.h" />

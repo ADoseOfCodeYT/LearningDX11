@@ -12,9 +12,8 @@ ApplicationClass::ApplicationClass()
     m_Timer = 0;
     m_FontShader = 0;
     m_Font = 0;
-    m_TextString1 = 0;
-    m_TextString2 = 0;
-    m_TextString3 = 0;
+    m_Fps = 0;
+    m_FpsString = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -27,10 +26,10 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
-    char testString1[32], testString2[32], testString3[32];
     char modelFilename[128];
     char textureFilename[128];
     char spriteFilename[128];
+    char fpsString[32];
     bool result;
 
     // Create and initialize the Direct3D object.
@@ -68,32 +67,23 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    // Set the strings we want to display.
-    strcpy_s(testString1, "Hello World");
-    strcpy_s(testString2, "This is a spinning plane --->");
-    strcpy_s(testString3, "And there are 4 point lights");
+    // Create and initialize the fps object.
+    m_Fps = new FPSClass();
 
-    // Create and initialize the first text object.
-    m_TextString1 = new TextClass;
+    m_Fps->Initialize();
 
-    result = m_TextString1->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, 32, m_Font, testString1, 10, 150, 0.0f, 1.0f, 0.0f);
+    // Set the initial fps and fps string.
+    m_previousFps = -1;
+    strcpy_s(fpsString, "Fps: 0");
+
+    // Create and initialize the text object for the fps string.
+    m_FpsString  = new TextClass;
+
+    result = m_FpsString ->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, 32, m_Font, fpsString, 10, 10, 0.0f, 1.0f, 0.0f);
     if(!result)
     {
         return false;
     }
-
-    // Create and initialize the second text object.
-    m_TextString2 = new TextClass;
-
-    result = m_TextString2->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, 32, m_Font, testString2, 10, 190, 1.0f, 0.0f, 0.0f);
-    if(!result)
-    {
-        return false;
-    }
-
-    m_TextString3 = new TextClass;
-
-    result = m_TextString3->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), screenWidth, screenHeight, 32, m_Font, testString3, 10, 230, 0.0f, 0.0f, 1.0f);
     
     // Create and initialize the texture shader object.
     m_TextureShader = new TextureShaderClass;
@@ -170,7 +160,6 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
-
     
     return true;
 }
@@ -185,27 +174,19 @@ void ApplicationClass::Shutdown()
         m_Timer = 0;
     }
 
-    // Release the text string objects.
-    
-    if(m_TextString1)
+    // Release the text object for the fps string.
+    if(m_FpsString)
     {
-        m_TextString1->Shutdown();
-        delete m_TextString1;
-        m_TextString1 = 0;
+        m_FpsString->Shutdown();
+        delete m_FpsString;
+        m_FpsString = 0;
     }
 
-    if(m_TextString2)
+    // Release the fps object.
+    if(m_Fps)
     {
-        m_TextString2->Shutdown();
-        delete m_TextString2;
-        m_TextString2 = 0;
-    }
-
-    if (m_TextString3)
-    {
-        m_TextString3->Shutdown();
-        delete m_TextString3;
-        m_TextString3 = 0;
+        delete m_Fps;
+        m_Fps = 0;
     }
     
     // Release the font object.
@@ -287,6 +268,13 @@ bool ApplicationClass::Frame()
     static float rotation = 0.0f;
     float frameTime;
     bool result;
+
+    // Update the frames per second each frame.
+    result = UpdateFps();
+    if(!result)
+    {
+        return false;
+    }
 
     // Update the system stats.
     m_Timer->Frame();
@@ -381,35 +369,15 @@ bool ApplicationClass::Render(float rotation)
         return false;
     }
 
-    // Render the first text string using the font shader.
-    m_TextString1->Render(m_Direct3D->GetDeviceContext());
+    // Render the fps text string using the font shader.
+    m_FpsString->Render(m_Direct3D->GetDeviceContext());
 
-    result = m_FontShader->Render(m_Direct3D->GetDeviceContext(), m_TextString1->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, 
-                                  m_Font->GetTexture(), m_TextString1->GetPixelColor());
+    result = m_FontShader->Render(m_Direct3D->GetDeviceContext(), m_FpsString->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, 
+                                  m_Font->GetTexture(), m_FpsString->GetPixelColor());
     if(!result)
     {
         return false;
     }
-
-    // Render the second text string using the font shader.
-    m_TextString2->Render(m_Direct3D->GetDeviceContext());
-
-    result = m_FontShader->Render(m_Direct3D->GetDeviceContext(), m_TextString2->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, 
-                                  m_Font->GetTexture(), m_TextString2->GetPixelColor());
-    if(!result)
-    {
-        return false;
-    }
-
-    m_TextString3->Render(m_Direct3D->GetDeviceContext());
-
-    result = m_FontShader->Render(m_Direct3D->GetDeviceContext(), m_TextString3->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, 
-                                  m_Font->GetTexture(), m_TextString3->GetPixelColor());
-    if(!result)
-    {
-        return false;
-    }
-
     
     m_Direct3D->TurnZBufferOn();
     m_Direct3D->DisableAlphaBlending();
@@ -417,5 +385,75 @@ bool ApplicationClass::Render(float rotation)
     // Present the rendered scene to the screen.
     m_Direct3D->EndScene();
     
+    return true;
+}
+
+bool ApplicationClass::UpdateFps()
+{
+    int fps;
+    char tempString[16], finalString[16];
+    float red, green, blue;
+    bool result;
+
+
+    // Update the fps each frame.
+    m_Fps->Frame();
+
+    // Get the current fps.
+    fps = m_Fps->GetFPS();
+
+    // Check if the fps from the previous frame was the same, if so don't need to update the text string.
+    if(m_previousFps == fps)
+    {
+        return true;
+    }
+
+    // Store the fps for checking next frame.
+    m_previousFps = fps;
+
+    // Truncate the fps to below 100,000.
+    if(fps > 99999)
+    {
+        fps = 99999;
+    }
+
+    // Convert the fps integer to string format.
+    sprintf_s(tempString, "%d", fps);
+
+    // Setup the fps string.
+    strcpy_s(finalString, "Fps: ");
+    strcat_s(finalString, tempString);
+
+    // If fps is 60 or above set the fps color to green.
+    if(fps >= 60)
+    {
+        red = 0.0f;
+        green = 1.0f;
+        blue = 0.0f;
+    }
+
+    // If fps is below 60 set the fps color to yellow.
+    if(fps < 60)
+    {
+        red = 1.0f;
+        green = 1.0f;
+        blue = 0.0f;
+    }
+
+    // If fps is below 30 set the fps color to red.
+    if(fps < 30)
+    {
+        red = 1.0f;
+        green = 0.0f;
+        blue = 0.0f;
+    }
+
+    // Update the sentence vertex buffer with the new string information.
+    result = m_FpsString->UpdateText(m_Direct3D->GetDeviceContext(), m_Font, finalString, 10, 10, red, green, blue);
+    if(!result)
+    {
+        return false;
+    }
+
     return true;
 }

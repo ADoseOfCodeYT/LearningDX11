@@ -49,3 +49,7 @@ BUILDFILES/
 #Jetbrains 
 
 .idea/
+
+#Debugging
+
+shader-error.txt

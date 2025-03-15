@@ -7,7 +7,7 @@ ApplicationClass::ApplicationClass()
     m_Model = 0;
     m_LightShader = 0;
     m_Lights = 0;
-    m_TextureShader = 0;
+    m_MultiTextureShader = 0;
     m_FontShader = 0;
     m_Font = 0;
     m_Fps = 0;
@@ -27,6 +27,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     char modelFilename[128];
     char textureFilename[128];
+    char textureFilename2[128];
     char fpsString[32];
     char mouseString1[32], mouseString2[32], mouseString3[32];
     bool result;
@@ -45,7 +46,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     m_Camera = new CameraClass;
 
     // Set the initial position of the camera.
-    m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+    m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
 
     // Create and initialize the font shader object.
     m_FontShader = new FontShaderClass;
@@ -110,26 +111,27 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
     
-    // Create and initialize the texture shader object.
-    m_TextureShader = new TextureShaderClass;
+    // Create and initialize the multitexture shader object.
+    m_MultiTextureShader = new MultiTextureShaderClass;
 
-    result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    result = m_MultiTextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
     if(!result)
     {
-        MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+        MessageBox(hwnd, L"Could not initialize the multitexture shader object.", L"Error", MB_OK);
         return false;
     }
     
     // Set the file name of the model.
     strcpy_s(modelFilename, "Content/Plane.txt");
 
-    // Set the name of the texture file that we will be loading.
+    // Set the name of the texture files that we will be loading.
     strcpy_s(textureFilename, "Content/textures/stone01.tga");
+    strcpy_s(textureFilename2, "Content/textures/dirt01.tga");
     
     // Create and initialize the model object.
     m_Model = new ModelClass;
 
-    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename);
+    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename, textureFilename2);
     if(!result)
     {
         MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -214,12 +216,12 @@ void ApplicationClass::Shutdown()
         m_FontShader = 0;
     }
     
-    // Release the texture shader object.
-    if(m_TextureShader)
+    // Release the multitexture shader object.
+    if(m_MultiTextureShader)
     {
-        m_TextureShader->Shutdown();
-        delete m_TextureShader;
-        m_TextureShader = 0;
+        m_MultiTextureShader->Shutdown();
+        delete m_MultiTextureShader;
+        m_MultiTextureShader = 0;
     }
     
     // Release the light objects.
@@ -353,9 +355,8 @@ bool ApplicationClass::Render(float rotation)
     // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
     m_Model->Render(m_Direct3D->GetDeviceContext());
     
-    // Render the model using the light shader.
-    result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(),
-                                   diffuseColor, lightPosition);
+    result = m_MultiTextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+                                        m_Model->GetTexture(0), m_Model->GetTexture(1));
     if(!result)
     {
         return false;

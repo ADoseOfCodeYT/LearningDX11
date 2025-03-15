@@ -154,6 +154,7 @@
     <ClCompile Include="Shaders\ColorShaderClass.cpp" />
     <ClCompile Include="Shaders\FontShaderClass.cpp" />
     <ClCompile Include="Shaders\LightShaderClass.cpp" />
+    <ClCompile Include="Shaders\MultiTextureShaderClass.cpp" />
     <ClCompile Include="Shaders\TextureShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
     <ClInclude Include="Shaders\ColorShaderClass.h" />
     <ClInclude Include="Shaders\FontShaderClass.h" />
     <ClInclude Include="Shaders\LightShaderClass.h" />
+    <ClInclude Include="Shaders\MultiTextureShaderClass.h" />
     <ClInclude Include="Shaders\TextureShaderClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

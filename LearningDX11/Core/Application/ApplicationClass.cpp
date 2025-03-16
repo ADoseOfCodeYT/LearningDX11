@@ -7,7 +7,6 @@ ApplicationClass::ApplicationClass()
     m_Model = 0;
     m_LightShader = 0;
     m_Lights = 0;
-    m_MultiTextureShader = 0;
     m_FontShader = 0;
     m_Font = 0;
     m_Fps = 0;
@@ -111,16 +110,6 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
     
-    // Create and initialize the multitexture shader object.
-    m_MultiTextureShader = new MultiTextureShaderClass;
-
-    result = m_MultiTextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
-    if(!result)
-    {
-        MessageBox(hwnd, L"Could not initialize the multitexture shader object.", L"Error", MB_OK);
-        return false;
-    }
-    
     // Set the file name of the model.
     strcpy_s(modelFilename, "Content/Plane.txt");
 
@@ -214,14 +203,6 @@ void ApplicationClass::Shutdown()
         m_FontShader->Shutdown();
         delete m_FontShader;
         m_FontShader = 0;
-    }
-    
-    // Release the multitexture shader object.
-    if(m_MultiTextureShader)
-    {
-        m_MultiTextureShader->Shutdown();
-        delete m_MultiTextureShader;
-        m_MultiTextureShader = 0;
     }
     
     // Release the light objects.
@@ -336,7 +317,7 @@ bool ApplicationClass::Render(float rotation)
     m_Direct3D->GetProjectionMatrix(projectionMatrix);
     m_Direct3D->GetOrthoMatrix(orthoMatrix);
 
-    rotateMatrix = XMMatrixRotationRollPitchYaw(rotation,0,rotation);  // Build the rotation matrix.
+    rotateMatrix = XMMatrixRotationRollPitchYaw(rotation,0, rotation);  // Build the rotation matrix.
     translateMatrix = XMMatrixTranslation(0.0f, 0.0f, 0.0f);  // Build the translation matrix.
 
     // Multiply them together to create the final world transformation matrix.
@@ -355,8 +336,8 @@ bool ApplicationClass::Render(float rotation)
     // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
     m_Model->Render(m_Direct3D->GetDeviceContext());
     
-    result = m_MultiTextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-                                        m_Model->GetTexture(0), m_Model->GetTexture(1));
+    result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(0), m_Model->GetTexture(1),
+                                   diffuseColor, lightPosition);
     if(!result)
     {
         return false;

@@ -1,7 +1,8 @@
 
 #define NUM_LIGHTS 4
 
-Texture2D shaderTexture : register(t0);
+Texture2D shaderTexture1 : register(t0);
+Texture2D shaderTexture2 : register(t1);
 SamplerState SampleType : register(s0);
 
 cbuffer LightColorBuffer
@@ -19,15 +20,22 @@ struct PixelInputType
 
 float4 LightPixelShader(PixelInputType input) : SV_TARGET
 {
-    float4 textureColor;
-     float lightIntensity[NUM_LIGHTS];
+    float lightIntensity[NUM_LIGHTS];
     float4 colorArray[NUM_LIGHTS];
     float4 colorSum;
-    float4 color;
+    float4 finalColor;
     int i;
 
-    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-    textureColor = shaderTexture.Sample(SampleType, input.tex);
+    float4 color1;
+    float4 color2;
+    float4 blendColor;
+    
+     // Sample the pixel color from the textures using the sampler at this texture coordinate location.
+    color1 = shaderTexture1.Sample(SampleType, input.tex);
+    color2 = shaderTexture2.Sample(SampleType, input.tex);
+    
+    // Combine the two textures together.
+    blendColor = color1 * color2 * 2.0;
     
     for(i=0; i<NUM_LIGHTS; i++)
     {
@@ -50,8 +58,8 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
     }
 
     // Multiply the texture pixel by the combination of all four light colors to get the final result.
-    color = saturate(colorSum) * textureColor;
+    finalColor = saturate(colorSum * blendColor);
 
-    return color;
+    return finalColor;
 }
 

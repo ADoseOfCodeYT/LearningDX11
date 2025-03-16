@@ -60,13 +60,13 @@ void LightShaderClass::Shutdown()
 }
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-                              ID3D11ShaderResourceView* texture, XMFLOAT4 diffuseColor[], XMFLOAT4 lightPosition[])
+                              ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2, XMFLOAT4 diffuseColor[], XMFLOAT4 lightPosition[])
 {
     bool result;
 
 
     // Set the shader parameters that it will use for rendering.
-    result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, diffuseColor, lightPosition);
+    result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture1, texture2, diffuseColor, lightPosition);
     if(!result)
     {
         return false;
@@ -349,7 +349,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 }
 
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, 
-                                           ID3D11ShaderResourceView* texture, XMFLOAT4 diffuseColor[], XMFLOAT4 lightPosition[])
+                                           ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2, XMFLOAT4 diffuseColor[], XMFLOAT4 lightPosition[])
 {
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -414,7 +414,8 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
     deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_lightPositionBuffer);
     
     // Set shader texture resource in the pixel shader.
-    deviceContext->PSSetShaderResources(0, 1, &texture);
+    deviceContext->PSSetShaderResources(0, 1, &texture1);
+    deviceContext->PSSetShaderResources(1, 1, &texture2);
     
     // Lock the light color constant buffer so it can be written to.
     result = deviceContext->Map(m_lightColorBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

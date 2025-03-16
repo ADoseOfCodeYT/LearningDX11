@@ -12,7 +12,6 @@
 #include "Shaders/FontShaderClass.h"
 #include "2D/FPSClass.h"
 #include "Input/InputClass.h"
-#include "Shaders/MultiTextureShaderClass.h"
 
 
 class ApplicationClass
@@ -35,7 +34,6 @@ private:
     CameraClass* m_Camera;
     ModelClass* m_Model;
     LightShaderClass* m_LightShader;
-    MultiTextureShaderClass* m_MultiTextureShader;
     LightClass* m_Lights;
     int m_numLights;
     FontShaderClass* m_FontShader;

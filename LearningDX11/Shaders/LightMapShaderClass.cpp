@@ -1,6 +1,6 @@
-﻿#include "MultiTextureShaderClass.h"
+﻿#include "LightMapShaderClass.h"
 
-MultiTextureShaderClass::MultiTextureShaderClass()
+LightMapShaderClass::LightMapShaderClass()
 {
     m_vertexShader = 0;
     m_pixelShader = 0;
@@ -9,17 +9,19 @@ MultiTextureShaderClass::MultiTextureShaderClass()
     m_sampleState = 0;
 }
 
-MultiTextureShaderClass::MultiTextureShaderClass(const MultiTextureShaderClass& other)
+
+LightMapShaderClass::LightMapShaderClass(const LightMapShaderClass& other)
 {
+    
 }
 
 
-MultiTextureShaderClass::~MultiTextureShaderClass()
+LightMapShaderClass::~LightMapShaderClass()
 {
+    
 }
 
-
-bool MultiTextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool LightMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
     bool result;
     wchar_t vsFilename[128];
@@ -27,14 +29,14 @@ bool MultiTextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
     int error;
 
     // Set the filename of the vertex shader.
-    error = wcscpy_s(vsFilename, 128, L"Shaders/MultiTextureVS.hlsl");
+    error = wcscpy_s(vsFilename, 128, L"Shaders/LightmapVS.hlsl");
     if(error != 0)
     {
         return false;
     }
 
     // Set the filename of the pixel shader.
-    error = wcscpy_s(psFilename, 128, L"Shaders/MultiTexturePS.hlsl");
+    error = wcscpy_s(psFilename, 128, L"Shaders/LightmapPS.hlsl");
     if(error != 0)
     {
         return false;
@@ -50,7 +52,7 @@ bool MultiTextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
     return true;
 }
 
-void MultiTextureShaderClass::Shutdown()
+void LightMapShaderClass::Shutdown()
 {
     // Shutdown the vertex and pixel shaders as well as the related objects.
     ShutdownShader();
@@ -58,8 +60,8 @@ void MultiTextureShaderClass::Shutdown()
     return;
 }
 
-bool MultiTextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-                                     XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2)
+bool LightMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
+                                 XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2)
 {
     bool result;
 
@@ -77,7 +79,7 @@ bool MultiTextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int ind
     return true;
 }
 
-bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool LightMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
     HRESULT result;
     ID3D10Blob* errorMessage;
@@ -95,7 +97,7 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
     pixelShaderBuffer = 0;
 
     // Compile the vertex shader code.
-    result = D3DCompileFromFile(vsFilename, NULL, NULL, "MultiTextureVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+    result = D3DCompileFromFile(vsFilename, NULL, NULL, "LightMapVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
                                 &vertexShaderBuffer, &errorMessage);
     if(FAILED(result))
     {
@@ -113,8 +115,8 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
         return false;
     }
 
-     // Compile the pixel shader code.
-    result = D3DCompileFromFile(psFilename, NULL, NULL, "MultiTexturePixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+    // Compile the pixel shader code.
+    result = D3DCompileFromFile(psFilename, NULL, NULL, "LightMapPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
                                 &pixelShaderBuffer, &errorMessage);
     if(FAILED(result))
     {
@@ -132,7 +134,7 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
         return false;
     }
 
-    // Create the vertex shader from the buffer.
+      // Create the vertex shader from the buffer.
     result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
     if(FAILED(result))
     {
@@ -229,7 +231,7 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
     return true;
 }
 
-void MultiTextureShaderClass::ShutdownShader()
+void LightMapShaderClass::ShutdownShader()
 {
     // Release the sampler state.
     if(m_sampleState)
@@ -269,7 +271,7 @@ void MultiTextureShaderClass::ShutdownShader()
     return;
 }
 
-void MultiTextureShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void LightMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
 {
     char* compileErrors;
     unsigned long long bufferSize, i;
@@ -304,8 +306,8 @@ void MultiTextureShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage,
     return;
 }
 
-bool MultiTextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-                                                  XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2)
+bool LightMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
+                                              XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture1, ID3D11ShaderResourceView* texture2)
 {
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -349,7 +351,7 @@ bool MultiTextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceCon
     return true;
 }
 
-void MultiTextureShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void LightMapShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
     // Set the vertex input layout.
     deviceContext->IASetInputLayout(m_layout);
@@ -366,3 +368,4 @@ void MultiTextureShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, i
 
     return;
 }
+

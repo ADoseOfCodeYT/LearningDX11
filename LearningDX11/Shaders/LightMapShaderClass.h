@@ -1,6 +1,5 @@
-﻿#ifndef _MULTITEXTURESHADERCLASS_H_
-#define _MULTITEXTURESHADERCLASS_H_
-
+﻿#ifndef _LIGHTMAPSHADERCLASS_H_
+#define _LIGHTMAPSHADERCLASS_H_
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -9,7 +8,7 @@
 using namespace DirectX;
 using namespace std;
 
-class MultiTextureShaderClass
+class LightMapShaderClass
 {
 private:
     struct MatrixBufferType
@@ -20,9 +19,9 @@ private:
     };
 
 public:
-    MultiTextureShaderClass();
-    MultiTextureShaderClass(const MultiTextureShaderClass&);
-    ~MultiTextureShaderClass();
+    LightMapShaderClass();
+    LightMapShaderClass(const LightMapShaderClass&);
+    ~LightMapShaderClass();
 
     bool Initialize(ID3D11Device*, HWND);
     void Shutdown();

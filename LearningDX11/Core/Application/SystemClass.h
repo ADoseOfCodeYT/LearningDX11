@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "Input/InputClass.h"
+
 #include "ApplicationClass.h"
 
 class SystemClass

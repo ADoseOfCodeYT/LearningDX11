@@ -10,6 +10,7 @@
 #include "Shaders/LightShaderClass.h"
 #include "Shaders/FontShaderClass.h"
 #include "Shaders/LightMapShaderClass.h"
+#include "Shaders/AlphaMapShaderClass.h"
 
 #include "2D/FontClass.h"
 #include "2D/TextClass.h"
@@ -49,6 +50,8 @@ private:
     int m_numLights;
     
     LightMapShaderClass* m_LightMapShader;
+
+    AlphaMapShaderClass* m_AlphaMapShader;
 };
 
 constexpr bool REALTIME_LIGHTING = true;

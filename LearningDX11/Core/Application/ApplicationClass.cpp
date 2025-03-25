@@ -12,6 +12,7 @@ ApplicationClass::ApplicationClass()
     m_Fps = 0;
     m_FpsString = 0;
     m_LightMapShader = 0;
+    m_AlphaMapShader = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -25,8 +26,9 @@ ApplicationClass::~ApplicationClass()
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     char modelFilename[128];
-    char textureFilename[128];
+    char textureFilename1[128];
     char textureFilename2[128];
+    char textureFilename3[128];
     char fpsString[32];
     bool result;
 
@@ -45,6 +47,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     // Set the initial position of the camera.
     m_Camera->SetPosition(0.0f, 0.0f, -15.0f);
+    m_Camera->Render();
 
     // Create and initialize the font shader object.
     m_FontShader = new FontShaderClass;
@@ -87,13 +90,24 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     strcpy_s(modelFilename, "Content/Plane.txt");
 
     // Set the name of the texture files that we will be loading.
-    strcpy_s(textureFilename, "Content/Textures/stone01.tga");
+    strcpy_s(textureFilename1, "Content/Textures/stone01.tga");
     strcpy_s(textureFilename2, "Content/Textures/dirt01.tga");
+    strcpy_s(textureFilename3, "Content/Textures/alpha01.tga");
+
+    // Create and initialize the alpha map shader object.
+    m_AlphaMapShader = new AlphaMapShaderClass;
+
+    result = m_AlphaMapShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    if(!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
+        return false;
+    }
     
     // Create and initialize the model object.
     m_Model = new ModelClass;
 
-    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename, textureFilename2);
+    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename1, textureFilename2, textureFilename3);
     if(!result)
     {
         MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -127,13 +141,13 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     m_Lights = new LightClass[m_numLights];
 
     // Manually set the color and position of each light.
-    m_Lights[0].SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);  // Red
+    m_Lights[0].SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);  // Red
     m_Lights[0].SetPosition(-3.0f, 1.0f, 3.0f);
 
-    m_Lights[1].SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);  // Green
+    m_Lights[1].SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);  // Green
     m_Lights[1].SetPosition(3.0f, 1.0f, 3.0f);
 
-    m_Lights[2].SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);  // Blue
+    m_Lights[2].SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);  // Blue
     m_Lights[2].SetPosition(-3.0f, 1.0f, -3.0f);
 
     m_Lights[3].SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);  // White
@@ -200,6 +214,14 @@ void ApplicationClass::Shutdown()
         m_Model = 0;
     }
 
+    // Release the alpha map shader object.
+    if(m_AlphaMapShader)
+    {
+        m_AlphaMapShader->Shutdown();
+        delete m_AlphaMapShader;
+        m_AlphaMapShader = 0;
+    }
+    
     // Release the camera object.
     if (m_Camera)
     {
@@ -305,8 +327,15 @@ bool ApplicationClass::Render(float rotation)
 
     if (REALTIME_LIGHTING)
     {
-        result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(0), m_Model->GetTexture(1),
-                                   diffuseColor, lightPosition);
+        // result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(0), m_Model->GetTexture(1),
+        //                            diffuseColor, lightPosition);
+        // if(!result)
+        // {
+        //     return false;
+        // }
+
+        result = m_AlphaMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+                                      m_Model->GetTexture(0), m_Model->GetTexture(1), m_Model->GetTexture(2));
         if(!result)
         {
             return false;
@@ -415,6 +444,6 @@ bool ApplicationClass::UpdateFps()
     {
         return false;
     }
-
+    
     return true;
 }

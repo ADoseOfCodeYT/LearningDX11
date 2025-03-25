@@ -151,6 +151,7 @@
     <ClCompile Include="Core\Scene\LightClass.cpp" />
     <ClCompile Include="Core\Scene\ModelClass.cpp" />
     <ClCompile Include="Core\Scene\TextureClass.cpp" />
+    <ClCompile Include="Shaders\AlphaMapShaderClass.cpp" />
     <ClCompile Include="Shaders\ColorShaderClass.cpp" />
     <ClCompile Include="Shaders\FontShaderClass.cpp" />
     <ClCompile Include="Shaders\LightMapShaderClass.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Core\Scene\LightClass.h" />
     <ClInclude Include="Core\Scene\ModelClass.h" />
     <ClInclude Include="Core\Scene\TextureClass.h" />
+    <ClInclude Include="Shaders\AlphaMapShaderClass.h" />
     <ClInclude Include="Shaders\ColorShaderClass.h" />
     <ClInclude Include="Shaders\FontShaderClass.h" />
     <ClInclude Include="Shaders\LightMapShaderClass.h" />
